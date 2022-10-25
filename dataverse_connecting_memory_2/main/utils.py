@@ -21,10 +21,16 @@ def format_form_response_to_dataset(body):
                             "value": title
                         },
                         {
-                            "typeName": "alternativeTitle",
+                            "typeName": "subtitle",
                             "multiple": False,
                             "typeClass": "primitive",
                             "value": body["Назва англійською"]
+                        },
+                        {
+                            "typeName": "alternativeTitle",
+                            "multiple": False,
+                            "typeClass": "primitive",
+                            "value": body["Назва файлу з джерелом"]
                         },
                         {
                             "typeName": "author",
@@ -120,7 +126,7 @@ def format_form_response_to_dataset(body):
                             ]
                         },
                         {
-                            "typeName": "dataSources",
+                            "typeName": "kindOfData",
                             "multiple": True,
                             "typeClass": "primitive",
                             "value": [
@@ -135,16 +141,34 @@ def format_form_response_to_dataset(body):
                             "value": body["Звідки взято джерело (сайт, фейсбук, приватне фото, тощо)"]
                         },
                         {
-                            "typeName": "productionDate",
+                            "typeName": "distributionDate",
                             "multiple": False,
                             "typeClass": "primitive",
                             "value": parser.parse(body["Дата публікації джерела "]).strftime("%Y-%m-%d")
                         },
                         {
-                            "typeName": "productionPlace",
+                            "typeName": "notesText",
                             "multiple": False,
                             "typeClass": "primitive",
-                            "value": body["Місцевість (місцевості), згадані у джерелі"]
+                            "value": body["Офіційний переклад англійською за наявності"]
+                        },
+                    ]
+                },
+                "geospatial": {
+                    "displayName": "Geospatial Metadata",
+                    "fields": [
+                        {
+                            "typeName": "geographicCoverage",
+                            "multiple": True,
+                            "typeClass": "compound",
+                            "value": [{
+                                "otherGeographicCoverage": {
+                                    "typeName": "otherGeographicCoverage",
+                                    "multiple": False,
+                                    "typeClass": "primitive",
+                                    "value": body["Місцевість (місцевості), згадані у джерелі"]
+                                }
+                            }]
                         }
                     ]
                 }

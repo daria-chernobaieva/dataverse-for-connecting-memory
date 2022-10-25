@@ -27,7 +27,7 @@ SECRET_KEY = 'django-insecure-+$c+b+wg0j^e0v2c)ik8u1thi6(6r^127mgv=*9+y321=&z906
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = ["a7ac-2a02-a44d-3f94-1-563b-5038-a1dc-e27.eu.ngrok.io"]
+ALLOWED_HOSTS = ["01aa-2a02-a44d-3f94-1-563b-5038-a1dc-e27.eu.ngrok.io"]
 
 
 # Application definition
@@ -125,6 +125,7 @@ STATIC_URL = 'static/'
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Dataverse settings
-DATAVERSE_BASE_URL = "http://localhost:8080"
+DATAVERSE_BASE_URL = secrets.SECRETS_DATAVERSE_BASE_URL
 DATAVERSE_API_TOKEN = secrets.SECRETS_DATAVERSE_API_TOKEN
-DATAVERSE_PARENT_ALIAS = "test"
+DATAVERSE_PARENT_ALIAS = secrets.SECRETS_DATAVERSE_PARENT_ALIAS
+TYPEFORM_CLIENT_SECRET = secrets.SECRETS_TYPEFORM_CLIENT_SECRET
