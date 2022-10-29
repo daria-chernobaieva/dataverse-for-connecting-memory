@@ -1,9 +1,11 @@
 from dateutil import parser
 from slugify import slugify
 
+from local_secrets import SECRETS_CONTACT_EMAIL
+
 
 def format_form_response_to_dataset(body):
-    title = body["Назва джерела"]
+    title = body.get("Назва джерела", "")
     return {
         "authority": "anAuthority",
         "identifier": slugify(title),
@@ -24,13 +26,13 @@ def format_form_response_to_dataset(body):
                             "typeName": "subtitle",
                             "multiple": False,
                             "typeClass": "primitive",
-                            "value": body["Назва англійською"]
+                            "value": body.get("Назва англійською", "")
                         },
                         {
                             "typeName": "alternativeTitle",
                             "multiple": False,
                             "typeClass": "primitive",
-                            "value": body["Назва файлу з джерелом"]
+                            "value": body.get("Назва файлу з джерелом", "")
                         },
                         {
                             "typeName": "author",
@@ -41,7 +43,7 @@ def format_form_response_to_dataset(body):
                                     "typeName": "authorName",
                                     "multiple": False,
                                     "typeClass": "primitive",
-                                    "value": body["Автор джерела"]
+                                    "value": body.get("Автор джерела", "")
                                 }
                             }]
                         },
@@ -54,7 +56,7 @@ def format_form_response_to_dataset(body):
                                     "typeName": "datasetContactEmail",
                                     "multiple": False,
                                     "typeClass": "primitive",
-                                    "value": "daria.chernobaieva@gmail.com"
+                                    "value": SECRETS_CONTACT_EMAIL
                                 }
                             }]
                         },
@@ -69,7 +71,7 @@ def format_form_response_to_dataset(body):
                                     "typeClass": "primitive",
                                     "value": desc_
                                 }
-                            } for desc_ in [body["Опис українською"], body["Опис англійською (за можливості)"]]]
+                            } for desc_ in [body.get("Опис українською", ""), body.get("Опис англійською (за можливості)", "")]]
                         },
                         {
                             "typeName": "subject",
@@ -90,7 +92,7 @@ def format_form_response_to_dataset(body):
                                     "typeClass": "primitive",
                                     "value": keyword_
                                 }
-                            } for keyword_ in body["Ключові слова"].split(", ")]
+                            } for keyword_ in body.get("Ключові слова", "").split(", ")]
                         },
                         {
                             "typeName": "publication",
@@ -101,7 +103,7 @@ def format_form_response_to_dataset(body):
                                     "typeName": "publicationURL",
                                     "multiple": False,
                                     "typeClass": "primitive",
-                                    "value": body["Інтернет посилання (для онлайн джерела)"]
+                                    "value": body.get("Інтернет посилання (для онлайн джерела)", "")
                                 }
                             }]
                         },
@@ -109,20 +111,21 @@ def format_form_response_to_dataset(body):
                             "typeName": "depositor",
                             "multiple": False,
                             "typeClass": "primitive",
-                            "value": body["Хто подав джерело до проєкту"]
+                            "value": body.get("Хто подав джерело до проєкту", "")
                         },
                         {
                             "typeName": "dateOfDeposit",
                             "multiple": False,
                             "typeClass": "primitive",
-                            "value": parser.parse(body["Дата подання джерела до проєкту"]).strftime("%Y-%m-%d")
+                            "value": parser.parse(body.get("Дата подання джерела до проєкту")).strftime("%Y-%m-%d")
+                            if body.get("Дата подання джерела до проєкту") else ""
                         },
                         {
                             "typeName": "language",
                             "multiple": True,
                             "typeClass": "controlledVocabulary",
                             "value": [
-                                "Ukrainian"  # body["Мова джерела"]
+                                "Ukrainian"  # body.get("Мова джерела", "")
                             ]
                         },
                         {
@@ -130,27 +133,29 @@ def format_form_response_to_dataset(body):
                             "multiple": True,
                             "typeClass": "primitive",
                             "value": [
-                                body[
-                                    "Вид джерела (пост в соцмережах, стаття, новини, офіційне звернення, відеоматеріал, графічне зображення, фото, тощо)"]
+                                body.get(
+                                    "Вид джерела (пост в соцмережах, стаття, новини, офіційне звернення, відеоматеріал, графічне зображення, фото, тощо)", ""
+                                )
                             ]
                         },
                         {
                             "typeName": "originOfSources",
                             "multiple": False,
                             "typeClass": "primitive",
-                            "value": body["Звідки взято джерело (сайт, фейсбук, приватне фото, тощо)"]
+                            "value": body.get("Звідки взято джерело (сайт, фейсбук, приватне фото, тощо)", "")
                         },
                         {
                             "typeName": "distributionDate",
                             "multiple": False,
                             "typeClass": "primitive",
-                            "value": parser.parse(body["Дата публікації джерела "]).strftime("%Y-%m-%d")
+                            "value": parser.parse(body.get("Дата публікації джерела")).strftime("%Y-%m-%d")
+                            if body.get("Дата публікації джерела") else ""
                         },
                         {
                             "typeName": "notesText",
                             "multiple": False,
                             "typeClass": "primitive",
-                            "value": body["Офіційний переклад англійською за наявності"]
+                            "value": body.get("Офіційний переклад англійською за наявності", "")
                         },
                     ]
                 },
@@ -166,7 +171,7 @@ def format_form_response_to_dataset(body):
                                     "typeName": "otherGeographicCoverage",
                                     "multiple": False,
                                     "typeClass": "primitive",
-                                    "value": body["Місцевість (місцевості), згадані у джерелі"]
+                                    "value": body.get("Місцевість (місцевості), згадані у джерелі", "")
                                 }
                             }]
                         }
