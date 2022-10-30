@@ -66,5 +66,5 @@ jobs:
     - name: Push to dockerhub
       run: |
         make VERSION=${{ env.version }} tag
-        docker push thomasve/emailsanitizer:${{ env.version }}
+        docker push thomasve/dataverse-memory-project:${{ env.version }}
 
