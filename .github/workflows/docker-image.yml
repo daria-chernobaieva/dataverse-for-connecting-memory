@@ -36,7 +36,7 @@ jobs:
         cp -r pyproject.toml src/tests/stub.toml
     - name: Run Pytest
       run: |
-        cd src/
+        cd dataverse_for_connecting_memory/src/
         pytest 
 
   push:
@@ -53,11 +53,12 @@ jobs:
         python-version: '3.9.14'
     - name: Perform gruesome hack
       run: |
+        cd dataverse_for_connecting_memory
         cp -r pyproject.toml src/stub.toml
     - name: Get version and tag image
       run: |
         pip install tomli
-        cd src/
+        cd dataverse_for_connecting_memory/src/
         echo "version=`python version.py`" >> $GITHUB_ENV
     - name: Login to registry
       uses: docker/login-action@v2
@@ -66,6 +67,7 @@ jobs:
         password: ${{ secrets.DOCKER_HUB_ACCESS_PASSWORD }}
     - name: Push to dockerhub
       run: |
+        cd dataverse_for_connecting_memory
         make VERSION=${{ env.version }} tag
         docker push thomasve/dataverse-memory-project:${{ env.version }}
 
