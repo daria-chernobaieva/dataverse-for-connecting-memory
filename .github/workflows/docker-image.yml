@@ -10,34 +10,34 @@ jobs:
 
   test:
 
-    runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ["3.9.14"]
-    name: Run tests
-    steps:
-    - name: Checkout repo
-      uses: actions/checkout@v3
-    - name: Set python version
-      uses: actions/setup-python@v4
-      with:
-        python-version: '3.9.14'
-    - name: Install dependencies
-      run: |
-        cd dataverse_for_connecting_memory
-        python -m pip install --upgrade pip
-        pip install pytest
-        pip install poetry
-        poetry config virtualenvs.create false
-        poetry install
-    - name: Perform gruesome hack
-      run: |
-        cp -r dataverse_for_connecting_memory/pyproject.toml dataverse_for_connecting_memory/src/stub.toml
-        cp -r dataverse_for_connecting_memory/pyproject.toml dataverse_for_connecting_memory/src/tests/stub.toml
-    - name: Run Pytest
-      run: |
-        cd dataverse_for_connecting_memory/src/
-        pytest 
+  #   runs-on: ubuntu-latest
+  #   strategy:
+  #     matrix:
+  #       python-version: ["3.9.14"]
+  #   name: Run tests
+  #   steps:
+  #   - name: Checkout repo
+  #     uses: actions/checkout@v3
+  #   - name: Set python version
+  #     uses: actions/setup-python@v4
+  #     with:
+  #       python-version: '3.9.14'
+  #   - name: Install dependencies
+  #     run: |
+  #       cd dataverse_for_connecting_memory
+  #       python -m pip install --upgrade pip
+  #       pip install pytest
+  #       pip install poetry
+  #       poetry config virtualenvs.create false
+  #       poetry install
+  #   - name: Perform gruesome hack
+  #     run: |
+  #       cp -r dataverse_for_connecting_memory/pyproject.toml dataverse_for_connecting_memory/src/stub.toml
+  #       cp -r dataverse_for_connecting_memory/pyproject.toml dataverse_for_connecting_memory/src/tests/stub.toml
+  #   - name: Run Pytest
+  #     run: |
+  #       cd dataverse_for_connecting_memory/src/
+  #       pytest 
 
   push:
 
