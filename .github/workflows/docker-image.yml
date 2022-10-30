@@ -53,7 +53,7 @@ jobs:
     - name: Perform gruesome hack
       run: |
         cd dataverse_for_connecting_memory
-        cp -r dataverse_for_connecting_memory/src/pyproject.toml dataverse_for_connecting_memory/src/stub.toml
+        cp -r pyproject.toml src/stub.toml
     - name: Get version and tag image
       run: |
         pip install tomli
