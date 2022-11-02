@@ -35,6 +35,12 @@ def format_form_response_to_dataset(body):
                             "value": body.get("Назва файлу з джерелом", "")
                         },
                         {
+                            "typeName": "alternativeURL",
+                            "multiple": False,
+                            "typeClass": "primitive",
+                            "value": body.get("Інтернет посилання (для онлайн джерела)", "")
+                        },
+                        {
                             "typeName": "author",
                             "multiple": True,
                             "typeClass": "compound",
@@ -93,19 +99,6 @@ def format_form_response_to_dataset(body):
                                     "value": keyword_
                                 }
                             } for keyword_ in body.get("Ключові слова", "").split(", ")]
-                        },
-                        {
-                            "typeName": "publication",
-                            "multiple": True,
-                            "typeClass": "compound",
-                            "value": [{
-                                "publicationURL": {
-                                    "typeName": "publicationURL",
-                                    "multiple": False,
-                                    "typeClass": "primitive",
-                                    "value": body.get("Інтернет посилання (для онлайн джерела)", "")
-                                }
-                            }]
                         },
                         {
                             "typeName": "depositor",
