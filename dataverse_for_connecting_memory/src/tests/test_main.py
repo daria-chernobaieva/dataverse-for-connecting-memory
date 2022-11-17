@@ -3,6 +3,7 @@ from unittest import mock
 from fastapi import status
 from fastapi.testclient import TestClient
 
+from src.const import TITLE, AUTHOR_NAME, DS_DESCRIPTION_VALUE_UA
 from src.main import app
 from src.local_secrets import SECRETS_TYPEFORM_CLIENT_SECRET, SECRETS_DATAVERSE_PARENT_ALIAS
 from src.utils import format_form_response_to_dataset
@@ -40,21 +41,39 @@ def test_submit_dataset_form(dataset_to_json_mock, dataset_from_json_mock, creat
     headers["typeform-signature"] = SECRETS_TYPEFORM_CLIENT_SECRET
     response = client.post("/submit_dataset_form", json=input_data, headers=headers)
     assert response.status_code == status.HTTP_400_BAD_REQUEST
-    assert response.json() == {"detail": f"Field 'Назва джерела' is required."}
+    assert response.json() == {"detail": f"Field '{TITLE}' is required."}
     dataset_from_json_mock.assert_not_called()
     create_dataset_mock.assert_not_called()
 
-    # Required fields are there => success
-    required_fields = ["Назва джерела", "Автор джерела", "Опис українською"]
+    # Required fields are there => failure on Dataverse side
+    required_fields = [TITLE, AUTHOR_NAME, DS_DESCRIPTION_VALUE_UA]
     input_data = {
         field_: "test" for field_ in required_fields
     }
+    create_dataset_mock.return_value.status_code = status.HTTP_403_FORBIDDEN
     expected_success_result = create_dataset_mock.return_value.json.return_value = {
-        "dataset": "test"
+        "message": "Dataverse Error"
     }
     response = client.post("/submit_dataset_form", json=input_data, headers=headers)
+    assert response.status_code == status.HTTP_400_BAD_REQUEST
+    assert response.json() == {"detail": expected_success_result["message"]}
+
+    dataset_from_json_mock.assert_called_once_with(
+        json.dumps(format_form_response_to_dataset(input_data))
+    )
+    create_dataset_mock.assert_called_once_with(SECRETS_DATAVERSE_PARENT_ALIAS, dataset_to_json_mock.return_value)
+
+    # failure on Dataverse side
+    dataset_from_json_mock.reset_mock()
+    create_dataset_mock.reset_mock()
+    create_dataset_mock.return_value.status_code = status.HTTP_201_CREATED
+    expected_success_result = create_dataset_mock.return_value.json.return_value = {
+        "data": {"id": 1, "persistentId": "doi/smth"}
+    }
+
+    response = client.post("/submit_dataset_form", json=input_data, headers=headers)
     assert response.status_code == status.HTTP_200_OK
-    assert response.json() == expected_success_result
+    assert response.json() == expected_success_result["data"]
 
     dataset_from_json_mock.assert_called_once_with(
         json.dumps(format_form_response_to_dataset(input_data))
