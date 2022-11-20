@@ -1,8 +1,10 @@
 import json
+from tempfile import NamedTemporaryFile
 
 from fastapi import FastAPI, Body, Request, status, HTTPException, Response
 from pyDataverse.api import NativeApi
 from pyDataverse.models import Dataset, Datafile
+from apiclient.discovery import build
 
 from const import *
 from local_secrets import *
@@ -32,14 +34,26 @@ def submit_dataset_form(request: Request, response: Response, input_data: dict =
     if resp.status_code != status.HTTP_201_CREATED:
         raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=resp.json().get("message"))
 
-    # parser = MyHTMLParser()
-    # parser.feed(input_data.get(FILES))
-    #
-    # for link in parser.links:
-    #     df = Datafile()
-    #     ds_pid = resp.json().get("data").get("persistentId")
-        # df_filename =
-        # df.set({"pid": ds_pid, "filename": df_filename})
-        # resp = api.upload_datafile(ds_pid, df_filename, df.json())
+    # Files upload
+    parser = MyHTMLParser()
+    parser.feed(input_data.get(FILES, ""))
+    ds_pid = resp.json().get("data").get("persistentId")
 
-    return resp.json().get("data")
+    if len(parser.links) > 0:
+        try:
+            service = build("drive", "v3", developerKey=SECRETS_GOOGLE_API_KEY)
+            for link in parser.links:
+                file_id = link.split("https://drive.google.com/open?id=")[-1]
+                metadata = service.files().get(fileId=file_id).execute()
+                df_filename = metadata.get("name")
+                df = Datafile(data={"pid": ds_pid, "filename": df_filename})
+
+                file_content = service.files().get_media(fileId=file_id).execute()
+                with NamedTemporaryFile(
+                    suffix=f".{metadata.get('mimeType').split('/')[-1]}",
+                    prefix=f"{df_filename.split('.')[0]}"
+                ) as pdf:
+                    pdf.write(file_content)
+                    api.upload_datafile(ds_pid, pdf.name, df.json())
+        except Exception as e:
+            raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))

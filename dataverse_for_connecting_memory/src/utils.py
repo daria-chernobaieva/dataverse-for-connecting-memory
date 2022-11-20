@@ -180,5 +180,5 @@ class MyHTMLParser(HTMLParser):
     links = []
 
     def handle_starttag(self, tag, attrs):
-        if tag == 'a':
+        if tag == "a":
             self.links += [attr[1] for attr in attrs if attr[0] == "href"]
