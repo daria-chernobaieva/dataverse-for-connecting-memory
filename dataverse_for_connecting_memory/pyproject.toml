@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "dataverse_for_connecting_memory"
-version = "0.1.3"
+version = "0.1.4"
 description = "A project allowing one to set up a FastAPI based Microservice, using cookiecutter"
 authors = ["Thomas van Erven"]
 
