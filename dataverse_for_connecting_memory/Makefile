@@ -22,8 +22,8 @@ test: ## Run unit tests
 copy-poetry-files: ## Copies poetry files inside container
 	@docker cp ./pyproject.toml ${CONTAINER_NAME}:/pyproject.toml
 export-poetry-files: ## Exports poetry files from inside container
-	@docker cp ${CONTAINER_NAME}:/pyproject.toml ./pyproject.toml
-	@docker cp ${CONTAINER_NAME}:/poetry.lock ./poetry.lock
+	@docker cp ${CONTAINER_NAME}:/root/pyproject.toml ./pyproject.toml
+	@docker cp ${CONTAINER_NAME}:/root/poetry.lock ./poetry.lock
 update-requirements: copy-poetry-files
 	@docker exec -it ${CONTAINER_NAME} poetry update
 	make export-poetry-files ## Export requirements and lock file

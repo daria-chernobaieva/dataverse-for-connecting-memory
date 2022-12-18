@@ -5,10 +5,23 @@ from fastapi import FastAPI, Body, Request, status, HTTPException, Response
 from pyDataverse.api import NativeApi
 from pyDataverse.models import Dataset, Datafile
 from apiclient.discovery import build
+import sentry_sdk
+from sentry_sdk.integrations.starlette import StarletteIntegration
+from sentry_sdk.integrations.fastapi import FastApiIntegration
 
 from const import *
 from local_secrets import *
 from utils import format_form_response_to_dataset, MyHTMLParser
+
+
+sentry_sdk.init(
+    dsn=SECRETS_SENTRY_DSN,
+    traces_sample_rate=1.0,
+    integrations=[
+        StarletteIntegration(transaction_style="endpoint"),
+        FastApiIntegration(transaction_style="endpoint"),
+    ],
+)
 
 app = FastAPI()
 
@@ -57,3 +70,8 @@ def submit_dataset_form(request: Request, response: Response, input_data: dict =
                     api.upload_datafile(ds_pid, pdf.name, df.json())
         except Exception as e:
             raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail=str(e))
+
+
+@app.get("/sentry-debug")
+def trigger_error():
+    division_by_zero = 1 / 0
